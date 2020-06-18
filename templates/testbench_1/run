@@ -1,0 +1,19 @@
+#!/usr/bin/csh
+source /apps/set_license
+
+##DELETE SIMULATION FILES
+rm -rf simv* 
+rm -rf *.log 
+rm -rf csrc
+rm -rf *.key
+rm -rf *.h
+rm -rf *.vcd
+
+#START SIMULATION
+setenv VCS_HOME /apps/synopsys/I-2014.03-2
+source ${VCS_HOME}/bin/environ.csh
+setenv UVM_HOME /home/morris/uvm-1.2
+setenv VCS_UVM_HOME ${UVM_HOME}
+vcs -sverilog -timescale=1ns/1ns +define+UVM_OBJECT_MUST_HAVE_CONSTRUCTOR +define+UVM_NO_DEPRECATED +acc +vpi +incdir+${UVM_HOME}/src ${UVM_HOME}/src/uvm.sv ${UVM_HOME}/src/dpi/uvm_dpi.cc ${UVM_HOME}/src/uvm_pkg.sv -CFLAGS -DVCS top.sv   -l compile.log
+if ($status != 0) exit $status
+./simv +UVM_TESTNAME=test_template +UVM_VERBOSITY=HIGH -l run.log

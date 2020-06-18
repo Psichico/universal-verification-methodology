@@ -1,0 +1,2 @@
+#!/usr/bin/csh
+find . -type f -name '.*.*.sw*' -delete
