@@ -6,19 +6,13 @@ Date created:   21 June 2020
 =========================================================*/
 
 
+`include "./top/defines.sv"
+`include "./top/interface.sv"
+`include "./apb_package.sv"
 `include "uvm_macros.svh"
+import apb_pkg::*;
 import uvm_pkg::*;
 
-`include "./top/interface.sv"
-`include "./env/packet/sequence_item.sv"
-`include "./test/sequence/sequence.sv"
-`include "./env/agent/sequencer.sv"
-`include "./env/agent/driver.sv"
-`include "./env/agent/monitor.sv"
-`include "./env/agent/agent.sv"
-`include "./env/scoreboard/scoreboard.sv"
-`include "./env/env.sv"
-`include "./test/test.sv"
 
 //include DUT here
 
@@ -26,7 +20,7 @@ module top();
 
     reg clock;
 
-    apb_interface intf(.clock(clock));
+    apb_interface intf(.pclk(clock));
 
     //instantiate your DUT here and connect it with interface using dot method
 
