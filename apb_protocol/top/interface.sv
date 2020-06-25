@@ -5,13 +5,13 @@ Author:         Jaimil Patel
 Date created:   21 June 2020
 =========================================================*/
 
-interface apb_interface (input logic pclk);
+interface apb_interface (input logic pclk, input bit pready);
 
     bit preset; //active low
     bit pprot;
     bit penable;
     bit pwrite;
-    bit pready;
+    //bit pready;
     bit pslverr;
     
     bit [`APB_REG_ADDR_HIGH : `APB_REG_ADDR_LOW]        paddr;

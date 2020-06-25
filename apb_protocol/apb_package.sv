@@ -10,6 +10,7 @@ Date created:   21 June 2020
 package apb_pkg;
 
     import uvm_pkg::*;
+    typedef enum bit {READ, WRITE} transaction_type;
     `include "./env/packet/sequence_item.sv"
     `include "./test/sequence/sequence.sv"
     `include "./env/agent/sequencer.sv"

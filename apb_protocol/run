@@ -16,4 +16,4 @@ setenv UVM_HOME /home/morris/uvm-1.2
 setenv VCS_UVM_HOME ${UVM_HOME}
 vcs -sverilog -timescale=1ns/1ns +define+UVM_OBJECT_MUST_HAVE_CONSTRUCTOR +define+UVM_NO_DEPRECATED +acc +vpi +incdir+${UVM_HOME}/src ${UVM_HOME}/src/uvm.sv ${UVM_HOME}/src/dpi/uvm_dpi.cc ${UVM_HOME}/src/uvm_pkg.sv -CFLAGS -DVCS ./top/top.sv   -l compile.log
 if ($status != 0) exit $status
-./simv +UVM_TESTNAME=apb_test +UVM_VERBOSITY=HIGH -l run.log
+./simv +UVM_TESTNAME=apb_test +UVM_VERBOSITY=LOW -l run.log

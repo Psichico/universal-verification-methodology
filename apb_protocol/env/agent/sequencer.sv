@@ -36,8 +36,6 @@ class apb_sequencer extends uvm_sequencer #(apb_sequence_item);
     task run_phase(uvm_phase phase);
         super.run_phase(phase);
         `uvm_info(get_type_name(), " Run Phase ", UVM_HIGH);
-        //phase.raise_objection(this);
-        //phase.drop_objection(this);
     endtask: run_phase
 
     function void extract_phase(uvm_phase phase);

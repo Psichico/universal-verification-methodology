@@ -11,6 +11,9 @@ class apb_test extends uvm_test;
 
     //instantiate sequence, env, interface
     apb_env     env;
+    apb_reset   rst;
+    apb_setup   set;
+    apb_access  acc;
 
     function new(string name = "apb_test", uvm_component parent=null);
         super.new(name, parent);
@@ -44,13 +47,21 @@ class apb_test extends uvm_test;
         super.run_phase(phase);
         `uvm_info(get_type_name(), " Run Phase ", UVM_HIGH);
         
-       // phase.raise_objection(this);
+        phase.raise_objection(this);
         
         //start sequences on sequencer
-	//seq_demo = sequence_template::type_id::create("Demo seq",this);
-        //seq_demo.start(env.agnt.seqr);
-        //100;
-       // phase.drop_objection(this);
+	rst = apb_reset::type_id::create("rst",this);
+        rst.start(env.agnt.seqr);
+        #10;
+
+        set = apb_setup::type_id::create("set",this);
+        set.start(env.agnt.seqr);
+        #10;
+
+        acc = apb_access::type_id::create("access",this);
+        acc.start(env.agnt.seqr);
+        #10;
+        phase.drop_objection(this);
 
     endtask: run_phase
 

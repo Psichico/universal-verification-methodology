@@ -19,8 +19,9 @@ import uvm_pkg::*;
 module top();
 
     reg clock;
+    reg pready;
 
-    apb_interface intf(.pclk(clock));
+    apb_interface intf(.pclk(clock),.pready(pready));
 
     //instantiate your DUT here and connect it with interface using dot method
 
@@ -35,20 +36,22 @@ module top();
     end
 
     initial begin
-        clock = 0;
+        clock  = 0;
+        pready = 1;
         #50;
         forever begin
         #2 clock = 0;
         #2 clock = 1;
+           pready = ~pready;
         end
     end
 
-/*
+
     initial begin
         $dumpfile("dump.vcd");
         $dumpvars();
     end
-*/
+
 
 
 endmodule: top
