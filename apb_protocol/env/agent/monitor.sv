@@ -54,16 +54,17 @@ class apb_monitor extends uvm_monitor;
         forever begin
         @(posedge intf.pclk);
             
-            if(intf.pready == 0)
+            if(intf.pready == 1)
             begin
                 sample_new_values();
+                `uvm_info(get_type_name(),$sformatf("%d %d %d %d %d", base_pkt.pdata, base_pkt.penable, base_pkt.psel, base_pkt.paddr, base_pkt.pwrite), UVM_LOW)
             end
             else
             begin
                 keep_old_values();
             end
             
-            `uvm_info(get_type_name(),$sformatf("%d %d %d %d ", base_pkt.pdata, base_pkt.penable, base_pkt.psel, base_pkt.paddr), UVM_LOW)
+            //`uvm_info(get_type_name(),$sformatf("%d %d %d %d ", base_pkt.pdata, base_pkt.penable, base_pkt.psel, base_pkt.paddr), UVM_LOW)
             tx_port.write(base_pkt);
             
 
@@ -85,7 +86,7 @@ class apb_monitor extends uvm_monitor;
         base_pkt.preset     <= intf.preset;
         base_pkt.pprot      <= intf.pprot;
         base_pkt.penable    <= intf.penable;
-        //base_pkt.pwrite     <= intf.pwrite;
+        base_pkt.pwrite     <= intf.pwrite;
         base_pkt.pready     <= intf.pready;
         base_pkt.pslverr    <= intf.pslverr;
         base_pkt.paddr      <= intf.paddr;

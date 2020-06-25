@@ -53,14 +53,16 @@ class apb_test extends uvm_test;
 	rst = apb_reset::type_id::create("rst",this);
         rst.start(env.agnt.seqr);
         #10;
+        repeat( $urandom_range(5, 10))
+        begin
+            set = apb_setup::type_id::create("set",this);
+            set.start(env.agnt.seqr);
+            #10;
 
-        set = apb_setup::type_id::create("set",this);
-        set.start(env.agnt.seqr);
-        #10;
-
-        acc = apb_access::type_id::create("access",this);
-        acc.start(env.agnt.seqr);
-        #10;
+            acc = apb_access::type_id::create("access",this);
+            acc.start(env.agnt.seqr);
+            #10;
+        end
         phase.drop_objection(this);
 
     endtask: run_phase

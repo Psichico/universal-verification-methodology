@@ -33,16 +33,20 @@ module top();
 
     initial begin
         run_test();
+        //#50;
+        //pready =0;
+        #20;
+        pready =1;
     end
 
     initial begin
         clock  = 0;
-        pready = 1;
+        //pready = 1;
         #50;
         forever begin
         #2 clock = 0;
         #2 clock = 1;
-           pready = ~pready;
+           //pready = ~pready;
         end
     end
 

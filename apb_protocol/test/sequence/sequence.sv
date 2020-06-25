@@ -89,9 +89,19 @@ class apb_access extends apb_sequence;
         access_pkt = apb_sequence_item::type_id::create(" Access Packet ");
         repeat (1)
         begin
+            /*
             start_item(access_pkt);
-            access_pkt.randomize() with {access_pkt.preset == 1; access_pkt.penable == 1; access_pkt.psel == 1; };
+            access_pkt.randomize() with {access_pkt.preset == 1; access_pkt.penable == 1; access_pkt.psel == 1;};
             finish_item(access_pkt);
+            */
+            
+            //start_item(access_pkt);
+            //access_pkt.randomize() with {access_pkt.preset == 1; access_pkt.penable == 1; access_pkt.psel == 1; access_pkt.pwrite == WRITE; access_pkt.paddr == 32'd5; };
+            //finish_item(access_pkt);
+            start_item(access_pkt);
+            access_pkt.randomize() with {access_pkt.preset == 1; access_pkt.penable == 1; access_pkt.psel == 1; access_pkt.pwrite == READ; access_pkt.paddr == 32'd5; };
+            finish_item(access_pkt);
+            
         end
     endtask: body
 

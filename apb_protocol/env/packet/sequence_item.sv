@@ -26,6 +26,7 @@ class apb_sequence_item extends uvm_sequence_item;
     constraint apb_reset_1 { soft preset == 1; };
     //constraint apb_reset_2 { preset == 0 -> penable == 0 && psel == 0;};
 
+    //constraint apb_setup {penable == 0 && psel == 1 -> pwrite == READ;};
     function new (string name = "apb_sequence_item");
         super.new(name);
     endfunction

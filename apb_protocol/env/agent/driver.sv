@@ -48,13 +48,15 @@ class apb_driver extends uvm_driver #(apb_sequence_item);
         
         forever begin
         @(posedge intf.pclk) //try putting this inside drive task
-            seq_item_port.get_next_item(base_pkt);
             //base_pkt.print();
+            seq_item_port.get_next_item(base_pkt);
             //`uvm_info(get_type_name(),$sformatf("HERE: %d", base_pkt.psel), UVM_LOW)
-            if(intf.pready) //only drive new values if PREADY signal is high.
+            
+            while (intf.pready == 0);
             begin
                 drive();
             end
+            
             seq_item_port.item_done(base_pkt);
         end
         
