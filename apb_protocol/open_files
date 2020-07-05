@@ -1,0 +1,4 @@
+#!/usr/bin/csh
+./swp_delete
+
+gvim -p ./top/interface.sv ./env/packet/sequence_item.sv ./test/sequence/sequence.sv ./env/agent/sequencer.sv ./env/agent/driver.sv ./env/agent/monitor.sv ./env/agent/agent.sv ./env/scoreboard/scoreboard.sv ./env/env.sv ./test/test.sv ./top/top.sv
