@@ -9,7 +9,6 @@ Date created:   21 June 2020
 class apb_agent extends uvm_agent;
     `uvm_component_utils(apb_agent)
 
-    //instantiate driver, sequencer, monitor
     apb_sequencer       seqr;
     apb_driver          drv;
     apb_monitor         mon;
@@ -21,7 +20,6 @@ class apb_agent extends uvm_agent;
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
         `uvm_info(get_type_name(), " Build Phase ", UVM_HIGH);
-        // type_id create subcomponents here
         drv  = apb_driver::type_id::create("Driver",this);
         seqr = apb_sequencer::type_id::create("Sequencer",this);
         mon  = apb_monitor::type_id::create("Monitor",this);
@@ -30,7 +28,6 @@ class apb_agent extends uvm_agent;
     function void connect_phase(uvm_phase phase);
         super.connect_phase(phase);
         `uvm_info(get_type_name(), " Connect Phase ", UVM_HIGH);
-        // connect subcomponents here
         drv.seq_item_port.connect(seqr.seq_item_export);
     endfunction: connect_phase
 
@@ -47,7 +44,6 @@ class apb_agent extends uvm_agent;
     task run_phase(uvm_phase phase);
         super.run_phase(phase);
         `uvm_info(get_type_name(), " Run Phase ", UVM_HIGH);
-        
     endtask: run_phase
 
     function void extract_phase(uvm_phase phase);

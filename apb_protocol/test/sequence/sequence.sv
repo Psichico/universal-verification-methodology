@@ -24,89 +24,27 @@ class apb_sequence extends uvm_sequence;
 endclass: apb_sequence
 
 
-// RESET SEQUENCE
-class apb_reset extends apb_sequence;
-    `uvm_object_utils(apb_reset)
 
-    apb_sequence_item reset_pkt;
+// Random SEQUENCE
+class apb_random extends apb_sequence;
+    `uvm_object_utils(apb_random)
 
-    function new(string name= "apb_reset");
+    apb_sequence_item random_pkt;
+
+    function new(string name= "apb_random");
         super.new(name);
     endfunction
 
     virtual task body();
-        `uvm_info(get_type_name(), " Reset Sequence Started ", UVM_LOW)
-        reset_pkt = apb_sequence_item::type_id::create(" Reset Packet ");
-        repeat (1)
+        `uvm_info(get_type_name(), " Random Sequence Started ", UVM_LOW)
+        random_pkt = apb_sequence_item::type_id::create(" Random Packet ");
+        repeat (1000)
         begin
-            start_item(reset_pkt);
-            reset_pkt.randomize() with {reset_pkt.preset == 0; reset_pkt.penable == 0; reset_pkt.psel == 0;};
-            finish_item(reset_pkt);
+            start_item(random_pkt);
+            random_pkt.randomize();
+            finish_item(random_pkt);
         end
     endtask: body
 
-endclass: apb_reset
-
-
-
-// SETUP SEQUENCE
-class apb_setup extends apb_sequence;
-    `uvm_object_utils(apb_setup)
-
-    apb_sequence_item setup_pkt;
-
-    function new(string name= "apb_setup");
-        super.new(name);
-    endfunction
-
-    virtual task body();
-        `uvm_info(get_type_name(), " Setup Sequence Started ", UVM_LOW)
-        setup_pkt = apb_sequence_item::type_id::create(" Setup Packet ");
-        repeat (1)
-        begin
-            start_item(setup_pkt);
-            setup_pkt.randomize() with {setup_pkt.preset == 1; setup_pkt.penable == 0; setup_pkt.psel == 1; };
-            finish_item(setup_pkt);
-        end
-    endtask: body
-
-endclass: apb_setup
-
-
-
-// ACCESS SEQUENCE
-class apb_access extends apb_sequence;
-    `uvm_object_utils(apb_access)
-
-    apb_sequence_item access_pkt;
-
-    function new(string name= "apb_access");
-        super.new(name);
-    endfunction
-
-    virtual task body();
-        `uvm_info(get_type_name(), " Access Sequence Started ", UVM_LOW)
-        access_pkt = apb_sequence_item::type_id::create(" Access Packet ");
-        repeat (1)
-        begin
-            /*
-            start_item(access_pkt);
-            access_pkt.randomize() with {access_pkt.preset == 1; access_pkt.penable == 1; access_pkt.psel == 1;};
-            finish_item(access_pkt);
-            */
-            
-            //start_item(access_pkt);
-            //access_pkt.randomize() with {access_pkt.preset == 1; access_pkt.penable == 1; access_pkt.psel == 1; access_pkt.pwrite == WRITE; access_pkt.paddr == 32'd5; };
-            //finish_item(access_pkt);
-            start_item(access_pkt);
-            access_pkt.randomize() with {access_pkt.preset == 1; access_pkt.penable == 1; access_pkt.psel == 1; access_pkt.pwrite == READ; access_pkt.paddr == 32'd5; };
-            finish_item(access_pkt);
-            
-        end
-    endtask: body
-
-endclass: apb_access
-
-
-
+endclass: apb_random
 

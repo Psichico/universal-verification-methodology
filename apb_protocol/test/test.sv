@@ -9,11 +9,8 @@ Date created:   21 June 2020
 class apb_test extends uvm_test;
     `uvm_component_utils(apb_test)
 
-    //instantiate sequence, env, interface
     apb_env     env;
-    apb_reset   rst;
-    apb_setup   set;
-    apb_access  acc;
+    apb_random  rnd;
 
     function new(string name = "apb_test", uvm_component parent=null);
         super.new(name, parent);
@@ -22,20 +19,20 @@ class apb_test extends uvm_test;
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
         `uvm_info(get_type_name(), " Build Phase ", UVM_HIGH);
-        // type_id create subcomponents here
         env = apb_env::type_id::create("env",this);
+
     endfunction: build_phase
 
     function void connect_phase(uvm_phase phase);
         super.connect_phase(phase);
         `uvm_info(get_type_name(), " Connect Phase ", UVM_HIGH);
-        // connect subcomponents here
     endfunction: connect_phase
 
     function void end_of_elaboration_phase(uvm_phase phase);
         super.end_of_elaboration_phase(phase);
         `uvm_info(get_type_name(), " End of elaboration Phase ", UVM_HIGH);
         uvm_top.print_topology();
+
     endfunction: end_of_elaboration_phase
 
     function void start_of_simulation_phase(uvm_phase phase);
@@ -49,20 +46,10 @@ class apb_test extends uvm_test;
         
         phase.raise_objection(this);
         
-        //start sequences on sequencer
-	rst = apb_reset::type_id::create("rst",this);
-        rst.start(env.agnt.seqr);
-        #10;
-        repeat( $urandom_range(5, 10))
-        begin
-            set = apb_setup::type_id::create("set",this);
-            set.start(env.agnt.seqr);
-            #10;
+        rnd = apb_random::type_id::create("rnd",this);
+        rnd.start(env.agnt.seqr);
+        #10; //should wait for some time in order to let the driver-monitor mechanism process the last sequence.
 
-            acc = apb_access::type_id::create("access",this);
-            acc.start(env.agnt.seqr);
-            #10;
-        end
         phase.drop_objection(this);
 
     endtask: run_phase

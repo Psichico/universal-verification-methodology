@@ -9,7 +9,6 @@ Date created:   21 June 2020
 class apb_driver extends uvm_driver #(apb_sequence_item);
     `uvm_component_utils(apb_driver)
 
-    //instantiate sequence_items, virtual interface, config_database
     apb_sequence_item base_pkt;
     virtual apb_interface intf;
 
@@ -20,16 +19,16 @@ class apb_driver extends uvm_driver #(apb_sequence_item);
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
         `uvm_info(get_type_name(), " Build Phase ", UVM_HIGH);
-        // type_id create subcomponents here
+        
         base_pkt = apb_sequence_item::type_id::create("Base Packet");
         if (! (uvm_config_db #(virtual apb_interface)::get(this,"*","intf", intf)))
             `uvm_error(get_type_name(), "Could not get interface");
+
     endfunction: build_phase
 
     function void connect_phase(uvm_phase phase);
         super.connect_phase(phase);
         `uvm_info(get_type_name(), " Connect Phase ", UVM_HIGH);
-        // connect subcomponents here
     endfunction: connect_phase
 
     function void end_of_elaboration_phase(uvm_phase phase);
@@ -48,38 +47,51 @@ class apb_driver extends uvm_driver #(apb_sequence_item);
         
         forever begin
         @(posedge intf.pclk) //try putting this inside drive task
-            //base_pkt.print();
-            seq_item_port.get_next_item(base_pkt);
-            //`uvm_info(get_type_name(),$sformatf("HERE: %d", base_pkt.psel), UVM_LOW)
-            
-            while (intf.pready == 0);
-            begin
-                drive();
-            end
-            
-            seq_item_port.item_done(base_pkt);
-        end
-        
-        
 
+            //base_pkt.print(); //remove comment if you want to print packets
+            if(intf.preset == 0)
+            begin
+                apb_reset();
+            end
+        
+            else
+            begin
+                seq_item_port.get_next_item(base_pkt);
+                apb_drive();
+                //seq_item_port.item_done(base_pkt); //this means you are sending a response
+                seq_item_port.item_done(); //you are not sending a response
+
+            end
+        end
     endtask: run_phase
 
-    task drive(); //add virtual here
-        
-        `uvm_info(get_type_name(), "DRIVING" , UVM_LOW)
-        intf.preset     <= base_pkt.preset;
-        intf.pprot      <= base_pkt.pprot;
-        intf.penable    <= base_pkt.penable;
-        intf.pwrite     <= base_pkt.pwrite;
-        //intf.pready     <= base_pkt.pready; //slave's signal
-        //intf.pslverr    <= base_pkt.pslverr; //slave's signal
-        intf.paddr      <= base_pkt.paddr;
-        intf.psel       <= base_pkt.psel;
-        intf.pwdata     <= base_pkt.pdata;
-        intf.pstrb      <= base_pkt.pstrb;
-        //intf.prdata     <= base_pkt.prdata; //slave's signal
+    task apb_reset();
+        `uvm_info(get_type_name(), "RESETING" , UVM_LOW)
+        intf.penable    <= 0;
+        intf.paddr      <= 0;
+        intf.psel       <= 0;
+        intf.pwdata     <= 0;
+        //intf.pstrb      <= base_pkt.pstrb;
+        //intf.pprot      <= base_pkt.pprot;
+    endtask: apb_reset
 
-    endtask: drive
+    task apb_drive(); //add virtual here
+        `uvm_info(get_type_name(), "DRIVING" , UVM_LOW)
+        intf.psel       <= 1;
+        intf.penable    <= 0;
+        intf.pwrite     <= base_pkt.pwrite;
+        intf.paddr      <= base_pkt.paddr;
+        intf.pwdata     <= base_pkt.pwrite ? base_pkt.pdata : 0;
+        @(posedge intf.pclk) //access phase should happen in next clock cycle as setup cycle
+            intf.penable    <= 1;
+            wait(intf.pready == 1); //if slave is driving PREADY low then wait.
+            @(posedge intf.pclk)
+                intf.penable <= 0;
+                intf.psel    <= 0;
+            
+        //intf.pstrb      <= base_pkt.pstrb;
+        //intf.pprot      <= base_pkt.pprot;
+    endtask: apb_drive
 
     function void extract_phase(uvm_phase phase);
         super.extract_phase(phase);
@@ -100,6 +112,5 @@ class apb_driver extends uvm_driver #(apb_sequence_item);
         super.final_phase(phase);
         `uvm_info(get_type_name(), " Final Phase ", UVM_HIGH);
     endfunction: final_phase
-
 
 endclass: apb_driver

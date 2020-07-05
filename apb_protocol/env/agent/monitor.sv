@@ -9,10 +9,8 @@ Date created:   17 June 2020
 class apb_monitor extends uvm_monitor;
     `uvm_component_utils(apb_monitor)
 
-    //create monitor port
     uvm_analysis_port #(apb_sequence_item) tx_port;
 
-    //instantiate virtual interface, config_class, sequence_item
     apb_sequence_item base_pkt;
     virtual apb_interface intf;
 
@@ -23,7 +21,7 @@ class apb_monitor extends uvm_monitor;
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
         `uvm_info(get_type_name(), " Build Phase ", UVM_HIGH);
-        // type_id create subcomponents here
+
         tx_port = new("Monitor output",this);
         base_pkt     = apb_sequence_item::type_id::create("Base Packet");
         if (! (uvm_config_db #(virtual apb_interface)::get(this,"*","intf", intf)))
@@ -34,7 +32,6 @@ class apb_monitor extends uvm_monitor;
     function void connect_phase(uvm_phase phase);
         super.connect_phase(phase);
         `uvm_info(get_type_name(), " Connect Phase ", UVM_HIGH);
-        // connect subcomponents here
     endfunction: connect_phase
 
     function void end_of_elaboration_phase(uvm_phase phase);
@@ -56,60 +53,31 @@ class apb_monitor extends uvm_monitor;
             
             if(intf.pready == 1)
             begin
-                sample_new_values();
-                `uvm_info(get_type_name(),$sformatf("%d %d %d %d %d", base_pkt.pdata, base_pkt.penable, base_pkt.psel, base_pkt.paddr, base_pkt.pwrite), UVM_LOW)
+                sample_new_values(); //slave will only take the new values when PREADY is high
+                if( (intf.pready & intf.psel & intf.penable & intf.pslverr) == 0) 
+                begin
+                    tx_port.write(base_pkt);
+                    `uvm_info(get_type_name(),$sformatf("WRITING: pslverr= %d ", intf.pslverr), UVM_LOW)
+                end
+                else 
+                begin
+                    `uvm_info(get_type_name(),$sformatf("SLAVE DIDN'T RECEIVE THE TRANSACTION PROPERLY: pslverr= %d ", intf.pslverr), UVM_LOW)
+                end
             end
-            else
-            begin
-                keep_old_values();
-            end
-            
-            //`uvm_info(get_type_name(),$sformatf("%d %d %d %d ", base_pkt.pdata, base_pkt.penable, base_pkt.psel, base_pkt.paddr), UVM_LOW)
-            tx_port.write(base_pkt);
-            
-
         end
         
     endtask: run_phase
 
-    task sample_new_values(); //add virtual here
-            case(intf.pwrite)
-                READ:
-                begin
-                    base_pkt.pdata <= intf.prdata; 
-                end
-                WRITE:
-                begin
-                    base_pkt.pdata <= intf.pwdata;
-                end
-            endcase
-        base_pkt.preset     <= intf.preset;
-        base_pkt.pprot      <= intf.pprot;
-        base_pkt.penable    <= intf.penable;
-        base_pkt.pwrite     <= intf.pwrite;
-        base_pkt.pready     <= intf.pready;
-        base_pkt.pslverr    <= intf.pslverr;
+    task sample_new_values(); //add virtual here    
+        `uvm_info(get_type_name(), "MONITORING", UVM_LOW)
+        base_pkt.pdata      <= intf.pwrite ? intf.pwdata : intf.prdata;
+        //base_pkt.pwrite     <= intf.pwrite; // This wil give error which can be fixed by static casting
+        base_pkt.pwrite = transaction_type'(intf.pwrite); //Static cast. The above line will give error.
         base_pkt.paddr      <= intf.paddr;
-        base_pkt.psel       <= intf.psel;
-        //base_pkt.pwdata     <= intf.pwdata;
-        base_pkt.pstrb      <= intf.pstrb;
-        //base_pkt.prdata     <= intf.prdata;
-    endtask: sample_new_values
 
-    task keep_old_values(); //add virtual here
-        base_pkt.pdata      <= base_pkt.pdata; 
-        base_pkt.preset     <= base_pkt.preset;
-        base_pkt.pprot      <= base_pkt.pprot;
-        base_pkt.penable    <= base_pkt.penable;
-        //base_pkt.pwrite     <= base_pkt.pwrite;
-        base_pkt.pready     <= base_pkt.pready;
-        base_pkt.pslverr    <= base_pkt.pslverr;
-        base_pkt.paddr      <= base_pkt.paddr;
-        base_pkt.psel       <= base_pkt.psel;
-        //base_pkt.pwdata     <= base_pkt.pwdata;
-        base_pkt.pstrb      <= base_pkt.pstrb;
-        //base_pkt.prdata     <= base_pkt.prdata;
-    endtask: keep_old_values
+        //base_pkt.pstrb      <= intf.pstrb;
+        //base_pkt.pprot      <= intf.pprot;
+    endtask: sample_new_values
 
     function void extract_phase(uvm_phase phase);
         super.extract_phase(phase);

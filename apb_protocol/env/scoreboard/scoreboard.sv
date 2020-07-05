@@ -9,10 +9,8 @@ Date created:   21 June 2020
 class apb_scoreboard extends uvm_scoreboard;
     `uvm_component_utils(apb_scoreboard)
 
-    //create imp or export ports
     uvm_analysis_imp #(apb_sequence_item, apb_scoreboard) rx_port;
     
-    //instantiate sequence_item
     apb_sequence_item base_pkt;
 
     function new(string name = "apb_scoreboard", uvm_component parent=null);
@@ -22,18 +20,17 @@ class apb_scoreboard extends uvm_scoreboard;
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
         `uvm_info(get_type_name(), " Build Phase ", UVM_HIGH);
-        // type_id create subcomponents here
+
         base_pkt = apb_sequence_item::type_id::create("Base Packet");
         rx_port = new("Receive port",this);
+
     endfunction: build_phase
 
     function void connect_phase(uvm_phase phase);
         super.connect_phase(phase);
         `uvm_info(get_type_name(), " Connect Phase ", UVM_HIGH);
-        // connect subcomponents here
     endfunction: connect_phase
 
-    //implement write method when you use imp port
     function void write(apb_sequence_item pkt);
     
     endfunction
