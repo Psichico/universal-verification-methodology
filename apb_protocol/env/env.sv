@@ -16,16 +16,16 @@ class apb_env extends uvm_env;
     endfunction: new
 
     function void build_phase(uvm_phase phase);
-        super.build_phase(phase);
+        //super.build_phase(phase);
         `uvm_info(get_type_name(), " Build Phase ", UVM_HIGH);
 
-        agnt = apb_agent::type_id::create("Agent",this);
-        scbd = apb_scoreboard::type_id::create("Scoreboard",this);
+        agnt = apb_agent::type_id::create("Agent", this);
+        scbd = apb_scoreboard::type_id::create("Scoreboard", this);
 
     endfunction: build_phase
 
     function void connect_phase(uvm_phase phase);
-        super.connect_phase(phase);
+        //super.connect_phase(phase);
         `uvm_info(get_type_name(), " Connect Phase ", UVM_HIGH);
         agnt.mon.tx_port.connect(scbd.rx_port);
 

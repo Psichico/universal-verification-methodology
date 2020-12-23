@@ -38,7 +38,7 @@ class apb_random extends apb_sequence;
     virtual task body();
         `uvm_info(get_type_name(), " Random Sequence Started ", UVM_LOW)
         random_pkt = apb_sequence_item::type_id::create(" Random Packet ");
-        repeat (1000)
+        repeat (10)
         begin
             start_item(random_pkt);
             random_pkt.randomize();

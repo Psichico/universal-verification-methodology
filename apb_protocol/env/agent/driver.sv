@@ -42,7 +42,7 @@ class apb_driver extends uvm_driver #(apb_sequence_item);
     endfunction: start_of_simulation_phase
 
     task run_phase(uvm_phase phase);
-        super.run_phase(phase);
+        //super.run_phase(phase);
         `uvm_info(get_type_name(), " Run Phase ", UVM_HIGH);
         
         forever begin
